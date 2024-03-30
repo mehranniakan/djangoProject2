@@ -2,6 +2,7 @@ import datetime
 
 from django.http import HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404
+from django.utils import timezone
 
 # Create your views here.
 from blog.models import Post
@@ -15,31 +16,46 @@ def home_blog(request):
 
 
 def single_blog(request, pid):
-    base_query = get_object_or_404(Post, pk=pid, Status=True)
+    current_date = datetime.date.today()
+    base_query = get_object_or_404(Post, pk=pid, Publish_date__lte=current_date, Status=True)
+
     count = base_query.Counted_Views
     count = count + 1
+
     query = Post.objects.filter(pk=pid).update(Counted_Views=count)
-    get_items = Post.objects.all()
+
+    base_query = get_object_or_404(Post, pk=pid, Publish_date__lte=current_date, Status=True)
+
+    get_items = Post.objects.filter(Publish_date__lte=current_date, Status=True)
+    get_items = list(get_items)
 
     index = -1
-    next_id = pid
-    prev_id = pid
+    next_item = "Null"
+    prev_item = "Null"
 
-    try:
-        for x in get_items:
-            index += 1
-            if pid == x.pk:
-                next_id = get_items[index + 1].id
-                prev_id = get_items[index - 1].id
-            else:
-                pass
-    except:
-        print('Nothing to Show')
+    for x in get_items:
+        index += 1
+        if pid == x.id:
+            try:
+                next_item = get_items[index + 1]
+            except:
+                next_item = 'Null'
 
-    context = {'Post': base_query, 'count': count, 'next_id': next_id, 'prev_id': prev_id}
+            try:
+                if index == 0:
+                    pass
+                else:
+                    prev_item = get_items[index - 1]
+            except:
+                next_item = 'Null'
+
+        else:
+            pass
+    context = {'Post': base_query, 'next_item': next_item, 'prev_item': prev_item}
     return render(request, "blog/Blog-single.html", context)
 
 
-def test(request, age):
-    context = {'Posts': age}
-    return render(request, "blog/test.html", context)
+def test(request, pid):
+    return render(request, "blog/test.html")
+
+

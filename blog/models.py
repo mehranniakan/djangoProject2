@@ -24,8 +24,5 @@ class Post(models.Model):
     Created_date = models.DateField(auto_now_add=True)
     Updated_date = models.DateField(auto_now=True)
 
-    class Meta:
-        ordering = ('Created_date',)
-
     def __str__(self):
         return self.Title
