@@ -9,14 +9,14 @@ from blog.models import Post
 
 
 def home_blog(request):
-    current_date = datetime.date.today()
+    current_date = timezone.now().date()
     post = Post.objects.filter(Publish_date__lte=current_date, Status=True)
     context = {'Posts': post}
     return render(request, "blog/blog-home.html", context)
 
 
 def single_blog(request, pid):
-    current_date = datetime.date.today()
+    current_date = timezone.now().date()
     base_query = get_object_or_404(Post, pk=pid, Publish_date__lte=current_date, Status=True)
 
     count = base_query.Counted_Views
@@ -56,6 +56,6 @@ def single_blog(request, pid):
 
 
 def test(request, pid):
-    return render(request, "blog/test.html")
-
-
+    now = timezone.now().date()
+    context = {'Time': now}
+    return render(request, "blog/test.html", context)
