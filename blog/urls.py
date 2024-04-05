@@ -1,8 +1,11 @@
 from django.urls import path
 from django.contrib import admin
-from blog.views import home_blog, single_blog, test
+from blog.views import home_blog, single_blog, test, search_blog
 
 urlpatterns = [
     path('', home_blog, name='home_blog'),
     path('Single/<int:pid>', single_blog, name='single_blog'),
+    path('Categorys/<str:catname>', home_blog, name='blog_categorys'),
+    path('Search', search_blog, name='blog_search'),
+    path('AuthorsPosts/<str:auth_name>', home_blog, name='blog_authors')
 ]
