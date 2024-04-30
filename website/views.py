@@ -21,10 +21,13 @@ def contact_us(request):
         contact_form = ContactForm(request.POST)
 
         if contact_form.is_valid():
+            if bool(contact_form.data.get('Subject', False)):
+                contact_form.instance.Subject = None
             contact_form.instance.Name = "Unknown"
             contact_form.save()
             messages.add_message(request, messages.SUCCESS, "You're Request has Successfuly Submitted !")
         else:
+            print(contact_form.errors)
             messages.add_message(request, messages.ERROR, "You're Request has not Submitted !")
             print("not")
         # name = request.POST.get('name')
