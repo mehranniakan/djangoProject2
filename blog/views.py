@@ -15,13 +15,13 @@ def home_blog(request, catname=None, auth_name=None):
     if catname is None and auth_name is None:
         current_date = timezone.now().date()
         post = Post.objects.filter(Publish_date__lte=current_date, Status=True).order_by('Publish_date')
-        pages = Paginator(post, 1)
+        pages = Paginator(post, 3)
         page_number = request.GET.get('Page')
         try:
             page_obj = pages.page(page_number)
 
         except InvalidPage:
-            pages = Paginator(post, 1)
+            pages = Paginator(post, 3)
             page_obj = pages.get_page(1)
 
         context = {'Posts': page_obj}

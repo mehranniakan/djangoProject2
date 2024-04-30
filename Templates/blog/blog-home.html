@@ -107,7 +107,8 @@
                                 </ul>
                                 <div class="user-details row">
                                     <p class="user-name col-lg-12 col-md-12 col-6"><a
-                                            href={% url 'blog_authors' p.Author.username %}>{{ p.Author.get_full_name }}</a> <span class="lnr lnr-user"></span>
+                                            href={% url 'blog_authors' p.Author.username %}>{{ p.Author.get_full_name }}</a>
+                                        <span class="lnr lnr-user"></span>
                                     </p>
                                     <p class="date col-lg-12 col-md-12 col-6"><a
                                             href="#">{{ p.Publish_date|date:"d-M-Y" }}</a> <span
@@ -132,32 +133,41 @@
                     {% endfor %}
                     <nav class="blog-pagination justify-content-center d-flex">
                         <ul class="pagination">
-                            <li class="page-item">
-                                <a href="#" class="page-link" aria-label="Previous">
+                            {% if Posts.has_previous %}
+                                <li class="page-item">
+                                    <a href="?Page={{ Posts.previous_page_number }}" class="page-link" aria-label="Previous">
 		                                    <span aria-hidden="true">
 		                                        <span class="lnr lnr-chevron-left"></span>
 		                                    </span>
-                                </a>
-                            </li>
-                            <li class="page-item"><a href="#" class="page-link">01</a></li>
-                            <li class="page-item active"><a href="#" class="page-link">02</a></li>
-                            <li class="page-item"><a href="#" class="page-link">03</a></li>
-                            <li class="page-item"><a href="#" class="page-link">04</a></li>
-                            <li class="page-item"><a href="#" class="page-link">09</a></li>
-                            <li class="page-item">
-                                <a href="#" class="page-link" aria-label="Next">
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% for page in Posts.paginator.page_range %}
+                                {% if page == Posts.number %}
+                                    <li class="page-item active"><a href="?Page={{ page }}"
+                                                                    class="page-link">{{ page }}</a></li>
+                                {% else %}
+                                    <li class="page-item"><a href="?Page={{ page }}" class="page-link">{{ page }}</a>
+                                    </li>
+                                {% endif %}
+
+                            {% endfor %}
+                            {% if Posts.has_next%}
+                                <li class="page-item">
+                                    <a href="?Page={{ Posts.next_page_number }}" class="page-link" aria-label="Next">
 		                                    <span aria-hidden="true">
 		                                        <span class="lnr lnr-chevron-right"></span>
 		                                    </span>
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </nav>
                 </div>
                 <div class="col-lg-4 sidebar-widgets">
                     <div class="widget-wrap">
                         <div class="single-sidebar-widget search-widget">
-                            <form class="search-form" method="get"  action={% url 'blog_search' %} >
+                            <form class="search-form" method="get" action={% url 'blog_search' %}>
                                 <input placeholder="Search Posts" name="SV" type="text"
                                        onfocus="this.placeholder = ''" onblur="this.placeholder = 'Search Posts'">
                                 <button type="submit"><i class="fa fa-search"></i></button>
