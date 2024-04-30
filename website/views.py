@@ -21,7 +21,7 @@ def contact_us(request):
         contact_form = ContactForm(request.POST)
 
         if contact_form.is_valid():
-            if bool(contact_form.data.get('Subject', False)):
+            if not bool(contact_form.data.get('Subject')):
                 contact_form.instance.Subject = None
             contact_form.instance.Name = "Unknown"
             contact_form.save()
