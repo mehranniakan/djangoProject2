@@ -19,12 +19,28 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 import blog.views
+from django.contrib.sitemaps.views import sitemap
+
+from blog.sitemaps import BlogSitemap
+from website.sitemaps import StaticViewSitemap
+
+sitemaps = {
+    'static': StaticViewSitemap,
+    'blog': BlogSitemap,
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('website.urls')),
     path('blog', include('blog.urls')),
-    path('test/<int:pid>', blog.views.test)
+    path('accounts/', include('allauth.urls')),
+    path('test/<int:pid>', blog.views.test),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
+    path('robots.txt', include('robots.urls')),
+    path("__debug__/", include("debug_toolbar.urls")),
+    path('summernote/', include('django_summernote.urls')),
+    path('captcha/', include('captcha.urls')),
+
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,18 +1,17 @@
-import datetime
-
-from django.http import HttpResponseNotFound, Http404
+from django.core.paginator import Paginator, InvalidPage
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
-from blog.models import Post
-from django.db.models import Q
-from django.core.paginator import Paginator, InvalidPage, EmptyPage, PageNotAnInteger
+import datetime
+from blog.forms import PostCommentsForms
+from blog.models import Post, Comment
 
 
 # Create your views here.
 
 
-def home_blog(request, catname=None, auth_name=None):
-    if catname is None and auth_name is None:
+def home_blog(request, catname=None, auth_name=None, tagname=None):
+    if catname is None and auth_name is None and tagname is None:
         current_date = timezone.now().date()
         post = Post.objects.filter(Publish_date__lte=current_date, Status=True).order_by('Publish_date')
         pages = Paginator(post, 3)
@@ -36,13 +35,19 @@ def home_blog(request, catname=None, auth_name=None):
     elif catname is None and auth_name is not None:
         now = timezone.now().date()
         posts = Post.objects.filter(Status=True, Publish_date__lte=now, Author__username=auth_name)
-        print(auth_name)
+        context = {'Posts': posts}
+        return render(request, "blog/blog-home.html", context)
+
+    elif catname is None and auth_name is None and tagname is not None:
+        now = timezone.now().date()
+        posts = Post.objects.filter(Status=True, Publish_date__lte=now, tags__name__in=tagname)
         context = {'Posts': posts}
         return render(request, "blog/blog-home.html", context)
 
 
 def single_blog(request, pid):
-    current_date = timezone.now().date()
+
+    current_date = datetime.datetime.now(tz=timezone.utc)
     base_query = get_object_or_404(Post, pk=pid, Publish_date__lte=current_date, Status=True)
 
     count = base_query.Counted_Views
@@ -54,6 +59,7 @@ def single_blog(request, pid):
 
     get_items = Post.objects.filter(Publish_date__lte=current_date, Status=True)
     get_items = list(get_items)
+    get_comments = Comment.objects.filter(Post_id=pid, Approved=True)
 
     index = -1
     next_item = "Null"
@@ -77,7 +83,24 @@ def single_blog(request, pid):
 
         else:
             pass
-    context = {'Post': base_query, 'next_item': next_item, 'prev_item': prev_item}
+    context = {'Post': base_query, 'Comments': get_comments, 'next_item': next_item, 'prev_item': prev_item}
+
+    if request.method == 'POST':
+
+        form = PostCommentsForms(request.POST)
+
+        if form.is_valid():
+            comment = Comment(Post_id=pid,
+                              Name=request.POST['Name'],
+                              Subject=request.POST['Subject'],
+                              Email=request.POST['Email'],
+                              Message=request.POST['Message'],
+                              )
+            comment.save()
+        else:
+            err = form.errors.as_data()
+            print(err)
+
     return render(request, "blog/Blog-single.html", context)
 
 
@@ -86,7 +109,6 @@ def search_blog(request):
     if request.method == "GET":
         current_date = timezone.now().date()
         val = request.GET.get('SV')
-        print(val)
         posts = Post.objects.filter(Status=True, Publish_date__lte=current_date)
         posts = posts.filter(Q(Content__contains=val) | Q(Title__contains=val))
         context = {'Posts': posts}

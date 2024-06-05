@@ -16,10 +16,14 @@ def about_page(request):
     return render(request, "web/about.html")
 
 
+class CaptchaTestForm:
+    pass
+
+
 def contact_us(request):
+    contact_form = ContactForm(request)
     if request.method == 'POST':
         contact_form = ContactForm(request.POST)
-
         if contact_form.is_valid():
             if not bool(contact_form.data.get('Subject')):
                 contact_form.instance.Subject = None
@@ -29,14 +33,8 @@ def contact_us(request):
         else:
             print(contact_form.errors)
             messages.add_message(request, messages.ERROR, "You're Request has not Submitted !")
-            print("not")
-        # name = request.POST.get('name')
-        # email = request.POST.get('email')
-        # subject = request.POST.get('subject')
-        # message = request.POST.get('message')
-        # print(name, email, subject, message)
     elif request.method == 'GET':
         print('Get Method')
     else:
         print('Invalid Method')
-    return render(request, "web/contact.html")
+    return render(request, "web/contact.html", {'form': contact_form})

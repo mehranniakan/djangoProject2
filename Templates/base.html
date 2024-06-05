@@ -40,8 +40,14 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 col-sm-6 col-6 header-top-left">
                     <ul>
-                        <li><a href="#">Visit Us</a></li>
-                        <li><a href="#">Buy Tickets</a></li>
+                        {% if request.user.is_authenticated %}
+                            <li><a href="{% url 'account_login' %}">Logged in as {{ request.user }}</a></li>
+                            <li><a href="{% url 'account_logout' %}">Log out</a></li>
+                            <li><a href="{% url 'account_set_password' %}">Reset Password</a></li>
+                        {% else %}
+                            <li><a href="{% url 'account_login' %}">Login</a></li>
+                            <li><a href="{% url 'account_signup' %}">Sign Up</a></li>
+                        {% endif %}
                     </ul>
                 </div>
                 <div class="col-lg-6 col-sm-6 col-6 header-top-right">
@@ -64,7 +70,14 @@
                 <ul class="nav-menu">
                     <li><a href="{% url 'index' %}">Home</a></li>
                     <li><a href="{% url 'about' %}">About</a></li>
-                    <li class="menu-has-children"><a href="{% url 'home_blog' %}">Blog</a></li>
+                    <li class="menu-has-children"><a
+                            href={% if request.user.is_authenticated %}
+                                {% url 'home_blog' %}
+                            {% else %}
+                                {% url 'account_login' %}
+                            {% endif %}
+                    >Blog
+                    </a></li>
                     <li class="menu-has-children"><a href="">Pages</a>
                         <ul>
                             <li><a href="elements.html">Elements</a></li>
