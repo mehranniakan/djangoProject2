@@ -40,9 +40,17 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 
 ACCOUNT_SIGNUP_REDIRECT_URL = "/"
 
-ACCOUNT_FORMS = {
-    'signup': 'custom_account.forms.MyCustomSignupForm',
-}
+ACCOUNT_FORMS = {'signup': 'custom_account.forms.MyCustomSignupForm'}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'mehran613.niakan@gmail.com'
+EMAIL_HOST_PASSWORD = 'avgj ebbh dddl hpll'
+
+
 INSTALLED_APPS = [
     'multi_captcha_admin',
     'django.contrib.admin',
