@@ -16,10 +16,6 @@ def about_page(request):
     return render(request, "web/about.html")
 
 
-class CaptchaTestForm:
-    pass
-
-
 def contact_us(request):
     contact_form = ContactForm(request)
     if request.method == 'POST':
@@ -38,3 +34,7 @@ def contact_us(request):
     else:
         print('Invalid Method')
     return render(request, "web/contact.html", {'form': contact_form})
+
+
+def Under_Maintenance(request):
+    return render(request, 'web/under_maintenance.html')

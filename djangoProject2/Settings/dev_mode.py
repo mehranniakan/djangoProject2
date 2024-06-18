@@ -1,3 +1,5 @@
+from djangoProject2.settings import *
+
 """
 Django settings for djangoProject2 project.
 
